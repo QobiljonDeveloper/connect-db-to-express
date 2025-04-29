@@ -90,3 +90,99 @@ VALUES
 (1, 2, '2025-05-01', '10:00', '12:00', 200000.00, 'PENDING'),
 (2, 3, '2025-05-02', '14:00', '16:00', 250000.00, 'CONFIRMED'),
 (3, 4, '2025-05-03', '18:00', '20:00', 300000.00, 'PAID');
+
+
+
+SELECT u.first_name, u.last_name, s.name, b.booking_date FROM booking b
+LEFT JOIN stadium s  ON b.stadion_id = s.id
+LEFT JOIN users u ON b.user_id = u.id
+WHERE b.booking_date BETWEEN "205-01-01" AND "2025-06-01"
+
+
+
+INSERT INTO review (stadion_id, user_id, rating, comment) VALUES
+(1, 2, 5, 'Ajoyib stadion, toza va katta'),
+(2, 3, 4, 'Yoritish sustroq edi, lekin umumiy yaxshi'),
+(3, 4, 3, 'Maydon holati o‘rtacha'),
+(1, 7, 5, 'Yaxshi jihozlangan, tavsiya qilaman'),
+(2, 10, 2, 'Tozalikka e’tibor berish kerak');
+
+
+
+
+SHOW TABLES
+
+DROP PROCEDURE IF EXISTS getAllUsers
+
+CREATE PROCEDURE IF NOT EXISTS getAllUsers()
+BEGIN
+    SELECT * FROM users;
+END
+
+CALL getAllUsers()
+
+
+
+CREATE PROCEDURE IF NOT EXISTS getUserById(IN userId INT)
+BEGIN
+    SELECT * FROM users WHERE id=userId;
+END
+
+
+CALL getUserById(2)
+
+
+CREATE PROCEDURE IF NOT EXISTS getUserName(IN userId INT, OUT userName VARCHAR(50))
+BEGIN
+    SELECT first_name INTO userName FROM users WHERE id = userId;
+END
+
+
+
+CALL getUserName(2, @userName) 
+
+
+SELECT @userName
+
+
+CREATE PROCEDURE IF NOT EXISTS res_out(INOUT res DECIMAL(15,2))
+BEGIN
+    SET res = res-10;
+END
+
+SET @res = 100
+
+CALL res_out(@res)
+
+
+
+SELECT @res 
+
+
+CREATE PROCEDURE IF NOT EXISTS add_price(INOUT pri DECIMAL(15,2))
+BEGIN
+   SET pri = pri + pri;
+END 
+
+
+SET @pri = 112222223.00;
+CALL add_price(@pri);   
+
+
+
+UPDATE stadium
+SET price = price + @pri;
+
+SELECT * FROM stadium;
+
+
+CREATE FUNCTION IF NOT EXISTS myFunc1() RETURNS INT DETERMINISTIC
+BEGIN
+
+    DECLARE sum INT DEFAULT 0;
+    SELECT COUNT(*) into sum FROM stadium;
+    return sum;
+END
+
+
+SELECT myFunc1()

@@ -73,10 +73,30 @@ const removeStadionById = (req, res) => {
   });
 };
 
+const getStadionByPriceAndTime = (req, res) => {
+  const { minPrice, maxPrice } = req.body;
+
+  const sql = `
+    SELECT s.*, TIMESTAMPDIFF(MINUTE, b.start_time, b.end_time) AS duration_minutes
+    FROM stadium s
+    JOIN booking b ON s.id = b.stadion_id
+    WHERE s.price BETWEEN ? AND ?
+    AND TIMESTAMPDIFF(MINUTE, b.start_time, b.end_time) > 120
+  `;
+
+  db.query(sql, [minPrice, maxPrice], (err, result) => {
+    if (err) {
+      return res.status(500).send({ message: err.message });
+    }
+    res.status(200).send({ data: result });
+  });
+};
+
 module.exports = {
   getStadionAll,
   getOneStadionById,
   createStadion,
   updateStadionById,
   removeStadionById,
+  getStadionByPriceAndTime,
 };
